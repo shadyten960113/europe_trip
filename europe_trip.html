@@ -1,0 +1,2103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>欧洲之旅 7.5–7.21 | 行程手册</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2333;
+    --border: #30363d;
+    --gold: #c9a84c;
+    --gold-light: #e6c97a;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #6e7681;
+    --red: #e05c5c;
+    --green: #56d364;
+    --blue: #79c0ff;
+    --orange: #f0883e;
+    --purple: #bc8cff;
+    --teal: #39d0b8;
+    --france: #4a90d9;
+    --swiss: #e63946;
+    --italy: #2a9d5c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', 'Noto Serif SC', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 60px 40px 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.12) 0%, transparent 60%);
+  }
+  .hero-route {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 5vw, 58px);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .hero h1 span { color: var(--gold); }
+  .hero-sub {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-n {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--gold);
+    display: block;
+  }
+  .stat-l { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+
+  /* ── NAV ── */
+  .nav-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-bar::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    padding: 12px 14px;
+    color: var(--text-muted);
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+
+  /* ── MAP ── */
+  #map-section {
+    padding: 40px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .section-sub { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
+  #map { width: 100%; height: 480px; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+  .leaflet-popup-content-wrapper { background: #1c2333; border: 1px solid #30363d; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+  .leaflet-popup-content { color: #e6edf3; font-family: Inter, sans-serif; margin: 10px 14px; }
+  .leaflet-popup-tip { background: #1c2333; }
+  .leaflet-popup-close-button { color: #8b949e !important; }
+  .leaflet-container { background: #0d1117; }
+
+  /* ── MAIN ── */
+  .main { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+  /* ── COUNTRY BLOCK ── */
+  .country-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 48px 0 24px;
+    padding: 20px 24px;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .country-header.france { background: linear-gradient(135deg, rgba(74,144,217,0.15), rgba(74,144,217,0.05)); border: 1px solid rgba(74,144,217,0.3); }
+  .country-header.swiss  { background: linear-gradient(135deg, rgba(230,57,70,0.15), rgba(230,57,70,0.05)); border: 1px solid rgba(230,57,70,0.3); }
+  .country-header.italy  { background: linear-gradient(135deg, rgba(42,157,92,0.15), rgba(42,157,92,0.05)); border: 1px solid rgba(42,157,92,0.3); }
+  .country-flag { font-size: 36px; }
+  .country-info h2 { font-family: 'Playfair Display', serif; font-size: 20px; }
+  .country-info p  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ── DAY CARD ── */
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .day-card:hover { border-color: rgba(201,168,76,0.4); }
+
+  .day-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    background: var(--surface2);
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .day-num {
+    background: var(--gold);
+    color: #0d1117;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 11px;
+    flex-shrink: 0;
+    line-height: 1.2;
+  }
+  .day-num .month { font-size: 9px; font-weight: 600; opacity: 0.7; }
+  .day-num .date  { font-size: 16px; font-weight: 700; }
+  .day-meta { flex: 1; min-width: 0; }
+  .day-meta h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .day-meta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .tag-transport { background: rgba(121,192,255,0.15); color: var(--blue); border: 1px solid rgba(121,192,255,0.25); }
+  .tag-hotel     { background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid rgba(201,168,76,0.2); }
+  .day-toggle { color: var(--text-muted); font-size: 18px; transition: transform 0.3s; }
+  .day-card.open .day-toggle { transform: rotate(180deg); }
+
+  .day-body { padding: 0 24px 24px; display: none; }
+  .day-card.open .day-body { display: block; }
+
+  /* ── NOTICE BOX ── */
+  .notice-box {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 18px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .notice-box strong { color: var(--gold); }
+  .notice-box.alert {
+    background: rgba(224,92,92,0.08);
+    border-color: rgba(224,92,92,0.3);
+  }
+  .notice-box.alert strong { color: var(--red); }
+  .notice-box.info {
+    background: rgba(121,192,255,0.07);
+    border-color: rgba(121,192,255,0.25);
+  }
+  .notice-box.info strong { color: var(--blue); }
+  .notice-box.green {
+    background: rgba(86,211,100,0.07);
+    border-color: rgba(86,211,100,0.25);
+  }
+  .notice-box.green strong { color: var(--green); }
+
+  /* ── SPOT ── */
+  .spots { margin-top: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .spot {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    background: var(--bg);
+    position: relative;
+  }
+  .spot-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+  .spot-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .spot-name { font-weight: 600; font-size: 15px; color: var(--text); }
+  .spot-name-lang { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  .spot-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .badge-dress-yes { background: rgba(224,92,92,0.2); color: #ff9999; }
+  .badge-dress-no  { background: rgba(86,211,100,0.15); color: var(--green); }
+  .badge-ticket    { background: rgba(201,168,76,0.2); color: var(--gold-light); }
+  .badge-free      { background: rgba(57,208,184,0.15); color: var(--teal); }
+  .spot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; }
+  @media(max-width:600px){ .spot-grid { grid-template-columns: 1fr; } }
+  .spot-grid-item { color: var(--text-muted); }
+  .spot-grid-item strong { color: var(--text); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; color: var(--text-dim); }
+  .spot-desc { margin-top: 10px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 10px; }
+
+  /* ── TRANSPORT CONNECTOR ── */
+  .transport-connector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    margin: 4px 0;
+    font-size: 12px;
+    color: var(--text-dim);
+    background: var(--surface2);
+    border-radius: 8px;
+    border: 1px dashed var(--border);
+  }
+  .transport-connector .tc-icon { font-size: 16px; }
+  .transport-connector .tc-info { flex: 1; }
+  .transport-connector .tc-time { color: var(--gold); font-weight: 600; }
+
+  /* ── NOTES TABLE ── */
+  .notes-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
+  .notes-table th { background: var(--surface2); color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; text-align: left; border: 1px solid var(--border); }
+  .notes-table td { padding: 10px 12px; border: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+  .notes-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .highlight { color: var(--gold-light); font-weight: 500; }
+
+  /* ── OVERVIEW TABLE ── */
+  #overview { margin: 40px 0; }
+  .ov-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .ov-table th { background: var(--surface2); color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 14px; text-align: left; border: 1px solid var(--border); position: sticky; top: 45px; }
+  .ov-table td { padding: 10px 14px; border: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+  .ov-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .ov-table .date-cell { color: var(--gold); font-weight: 600; white-space: nowrap; }
+  .ov-table .country-tag { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+  .ct-fr { background: rgba(74,144,217,0.2); color: #79b8f7; }
+  .ct-ch { background: rgba(230,57,70,0.2); color: #ff9999; }
+  .ct-it { background: rgba(42,157,92,0.2); color: #85e89d; }
+  .ov-confirmed { color: var(--green); font-size: 11px; }
+  .ov-pending   { color: var(--orange); font-size: 11px; }
+
+  /* ── TIPS SECTION ── */
+  .tips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin-top: 20px; }
+  .tip-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .tip-card h4 { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+  .tip-card p  { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── SCROLL ── */
+  html { scroll-behavior: smooth; }
+  .section-anchor { scroll-margin-top: 50px; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:600px){
+    .hero { padding: 40px 20px 36px; }
+    .hero-stats { gap: 24px; }
+    #map-section { padding: 24px 16px; }
+    .main { padding: 24px 12px; }
+    .day-header { padding: 14px 16px; }
+    .day-body { padding: 0 16px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-route">迪拜出发 · 欧洲深度之旅</div>
+  <h1>法国 <span>·</span> 瑞士 <span>·</span> 意大利</h1>
+  <p class="hero-sub">2025年7月5日 — 7月21日 &nbsp;｜&nbsp; 17 晚 · 18 天</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-n">3</span><span class="stat-l">国家</span></div>
+    <div class="stat"><span class="stat-n">8</span><span class="stat-l">城市</span></div>
+    <div class="stat"><span class="stat-n">8</span><span class="stat-l">酒店</span></div>
+    <div class="stat"><span class="stat-n">30+</span><span class="stat-l">景点</span></div>
+  </div>
+</div>
+
+<!-- ═══ NAV ═══ -->
+<div class="nav-bar">
+  <button class="nav-btn active" onclick="scrollTo('map-section')">🗺 路线地图</button>
+  <button class="nav-btn" onclick="scrollTo('overview')">📋 行程总览</button>
+  <button class="nav-btn" onclick="scrollTo('france')">🇫🇷 法国</button>
+  <button class="nav-btn" onclick="scrollTo('swiss')">🇨🇭 瑞士</button>
+  <button class="nav-btn" onclick="scrollTo('italy')">🇮🇹 意大利</button>
+  <button class="nav-btn" onclick="scrollTo('tips')">💡 旅行贴士</button>
+</div>
+
+<!-- ═══ MAP ═══ -->
+<div id="map-section" class="section-anchor">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="section-title">🗺 整体路线地图</div>
+    <p class="section-sub">迪拜 → 里昂 → 日内瓦 → 格林德瓦 → 卢塞恩 → 苏黎世 → 米兰 → 弗洛伦萨 → 罗马 → 迪拜</p>
+    <div id="map"></div>
+  </div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- ── OVERVIEW TABLE ── -->
+  <div id="overview" class="section-anchor">
+    <div class="section-title">📋 行程总览</div>
+    <p class="section-sub">所有日期一览，含交通方式、住宿及已确认事项</p>
+    <table class="ov-table">
+      <thead>
+        <tr>
+          <th>日期</th><th>国家</th><th>时间/交通</th><th>行程摘要</th><th>住宿</th><th>备注状态</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="date-cell">7月5日</td>
+          <td><span class="country-tag ct-fr">🇫🇷 法国</span></td>
+          <td>✈️ EK081 · 08:55–13:50</td>
+          <td>迪拜 DXB → 里昂 LYS，抵达，入住酒店</td>
+          <td>Pullman Lyon</td>
+          <td><span class="ov-confirmed">✓ 里昂→日内瓦火车票已在 Omio 购买</span><br><span class="ov-pending">⏳ 里昂交通卡待办</span></td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月6日</td>
+          <td><span class="country-tag ct-fr">🇫🇷 法国</span> <span class="country-tag ct-ch">🇨🇭 瑞士</span></td>
+          <td>🚂 火车</td>
+          <td>里昂老城区逛街，下午乘火车赴日内瓦</td>
+          <td>Hotel d'Alleves</td>
+          <td><span class="ov-pending">⏳ 提前购买日内瓦交通卡</span></td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月7日</td>
+          <td><span class="country-tag ct-ch">🇨🇭 瑞士</span></td>
+          <td>🚂 火车</td>
+          <td>日内瓦市内散步，傍晚前往格林德瓦</td>
+          <td>Hotel Cabana</td>
+          <td><span class="ov-confirmed">✓ 瑞士通票7.7起生效8天</span></td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月8日</td>
+          <td><span class="country-tag ct-ch">🇨🇭 瑞士</span></td>
+          <td>🚂 火车</td>
+          <td>采尔马特小镇 + 马特洪峰观赏</td>
+          <td>Hotel Cabana</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月9日</td>
+          <td><span class="country-tag ct-ch">🇨🇭 瑞士</span></td>
+          <td>🚂 火车</td>
+          <td>First山区滑梯，下午回格林德瓦</td>
+          <td>Hotel Cabana</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月10日</td>
+          <td><span class="country-tag ct-ch">🇨🇭 瑞士</span></td>
+          <td>🚂 小火车</td>
+          <td>布莱恩茨小火车 + 特拉肯游览</td>
+          <td>Hotel Cabana</td>
+          <td><span class="ov-confirmed">✓ 11:45车次已定，14:28返程</span></td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月11日</td>
+          <td><span class="country-tag ct-ch">🇨🇭 瑞士</span></td>
+          <td>🚂 火车+船</td>
+          <td>黄金列车至卢塞恩 → 轮船至Rigi Kulm</td>
+          <td>Burgenstock Hotel</td>
+          <td><span class="ov-confirmed">✓ 乘船码头: Luzern Bahnhofquai</span></td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月12日</td>
+          <td><span class="country-tag ct-ch">🇨🇭 瑞士</span></td>
+          <td>🛁 度假</td>
+          <td>在Burgenstock温泉水疗休息</td>
+          <td>Burgenstock Hotel</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月13日</td>
+          <td><span class="country-tag ct-ch">🇨🇭 瑞士</span></td>
+          <td>🚂 火车</td>
+          <td>卢塞恩→苏黎世，苏黎世→列支敦士登当天返</td>
+          <td>Ruby mini Hotel</td>
+          <td><span class="ov-confirmed">✓ 苏黎世→Sargenz→11路公交→Vaduz Post</span></td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月14日</td>
+          <td><span class="country-tag ct-it">🇮🇹 意大利</span></td>
+          <td>🚌 包车</td>
+          <td>苏黎世→米兰，米兰大教堂，王宫，和平门</td>
+          <td>Prestige Boutique Hotel</td>
+          <td><span class="ov-confirmed">✓ 米兰大教堂门票已买</span></td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月15日</td>
+          <td><span class="country-tag ct-it">🇮🇹 意大利</span></td>
+          <td>🚌 包车</td>
+          <td>米兰→科莫湖当天往返</td>
+          <td>Prestige Boutique Hotel</td>
+          <td><span class="ov-confirmed">✓ 游船Taxi Boat Varenna已定，100EUR定金</span></td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月16日</td>
+          <td><span class="country-tag ct-it">🇮🇹 意大利</span></td>
+          <td>🚌 包车</td>
+          <td>米兰→弗洛伦萨</td>
+          <td>Piazza Pitti Palace</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月17日</td>
+          <td><span class="country-tag ct-it">🇮🇹 意大利</span></td>
+          <td>🚌 包车</td>
+          <td>弗洛伦萨city walk，米开朗基罗广场，圣母百花大教堂，韦奇奥老桥</td>
+          <td>Piazza Pitti Palace</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月18日</td>
+          <td><span class="country-tag ct-it">🇮🇹 意大利</span></td>
+          <td>🚌 包车</td>
+          <td>弗洛伦萨→比萨→罗马，参观比萨斜塔，入住罗马酒店</td>
+          <td>Parisii Bocca di Leon 88</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月19日</td>
+          <td><span class="country-tag ct-it">🇮🇹 意大利</span></td>
+          <td>🚶 步行</td>
+          <td>特雷维许愿池，威尼斯广场，卡比托利欧博物馆，古罗马斗兽场</td>
+          <td>Parisii Bocca di Leon 88</td>
+          <td><span class="ov-confirmed">✓ 古罗马斗兽场门票已买</span></td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月20日</td>
+          <td><span class="country-tag ct-it">🇮🇹 意大利</span></td>
+          <td>🚶 步行</td>
+          <td>梵蒂冈博物馆，西斯廷礼拜堂，圣彼得大教堂，圣依纳爵教堂，万神殿</td>
+          <td>Parisii Bocca di Leon 88</td>
+          <td><span class="ov-confirmed">✓ 梵蒂冈+西斯廷门票已买，9:00前到达</span></td>
+        </tr>
+        <tr>
+          <td class="date-cell">7月21日</td>
+          <td><span class="country-tag ct-it">🇮🇹 意大利</span></td>
+          <td>✈️ EK098 · 15:25–23:15</td>
+          <td>罗马 FCO → 迪拜 DXB</td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════════ FRANCE ═══════════ -->
+  <div id="france" class="country-header france section-anchor">
+    <div class="country-flag">🇫🇷</div>
+    <div class="country-info">
+      <h2>法国 France</h2>
+      <p>7月5日 — 7月6日 · 里昂 Lyon</p>
+    </div>
+  </div>
+
+  <!-- Day 7.5 -->
+  <div class="day-card open" id="day-75">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">5</span></div>
+      <div class="day-meta">
+        <h3>✈️ 迪拜 → 里昂 · 抵达日</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">✈️ EK081 · 08:55–13:50</span>
+          <span class="tag tag-hotel">🏨 Pullman Lyon</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="notice-box">
+        <strong>✈️ 去程航班信息</strong>
+        <table style="margin-top:10px;width:100%;border-collapse:collapse;font-size:13px;">
+          <tr><td style="padding:4px 12px 4px 0;color:var(--text-dim);width:110px;">航班号</td><td style="color:var(--gold);font-weight:600;">EK081（Emirates 阿联酋航空）</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;color:var(--text-dim);">出发</td><td>🇦🇪 迪拜国际机场 DXB · 航站楼 T3 · <strong>08:55</strong></td></tr>
+          <tr><td style="padding:4px 12px 4px 0;color:var(--text-dim);">到达</td><td>🇫🇷 里昂圣埃克絮佩里机场 LYS · 航站楼 T1 · <strong>13:50</strong>（当地时间）</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;color:var(--text-dim);">飞行时长</td><td>约 6 小时 55 分钟 · 直飞</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;color:var(--text-dim);">机型</td><td>Boeing 777</td></tr>
+        </table>
+      </div>
+      <div class="notice-box info"><strong>📌 出发提示</strong> 请于早晨 <strong>06:00</strong> 前抵达迪拜机场 T3，航班 08:55 起飞。建议提前网上办理登机手续（Check-in 出发前 48 小时开放）。</div>
+      <div class="notice-box alert"><strong>⏳ 待办事项</strong> 抵达里昂后需购买 <strong>里昂交通卡 24小时</strong>，可在机场或车站服务台购买。</div>
+
+      <div class="spots">
+        <!-- Hotel -->
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏨</div>
+            <div>
+              <div class="spot-name">Pullman Lyon Centre</div>
+              <div class="spot-name-lang">法语: Pullman Lyon · 英语: Pullman Lyon Hotel</div>
+              <div class="spot-badges">
+                <span class="badge badge-free">今日终点&起点</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>地址</strong>14 Place Charles Béraudier, 69003 Lyon</div>
+            <div class="spot-grid-item"><strong>距离/时长</strong>里昂圣埃克絮佩里机场 → 酒店约30分钟，可乘Rhônexpress快轨</div>
+            <div class="spot-grid-item"><strong>着装要求</strong>无特殊要求</div>
+            <div class="spot-grid-item"><strong>评分</strong>⭐ 4.8/5（3084条评价）</div>
+          </div>
+        </div>
+
+        <!-- 里昂机场 -->
+        <div class="transport-connector">
+          <span class="tc-icon">🚇</span>
+          <span class="tc-info">里昂机场 → 里昂市中心（Rhônexpress快轨）</span>
+          <span class="tc-time">~30分钟 · 约€16</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🌆</div>
+            <div>
+              <div class="spot-name">里昂首日自由活动</div>
+              <div class="spot-name-lang">法语: Lyon · 英语: Lyon City</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需保守着装</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">下午抵达酒店后可在酒店附近的Part-Dieu商业区轻松逛逛，步行即可到达。建议早睡倒时差，明日还有精彩的里昂老城游览。</div>
+        </div>
+      </div>
+
+      <table class="notes-table" style="margin-top:18px;">
+        <tr><th>类型</th><th>详情</th></tr>
+        <tr><td>✅ 已确认</td><td class="highlight">里昂 → 日内瓦火车票已在 <strong>Omio</strong> 上购买，请出发前在 Omio App 确认取票/电子票方式</td></tr>
+        <tr><td>⏳ 待办</td><td>购买里昂交通卡24小时（机场或地铁站有售）</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Day 7.6 -->
+  <div class="day-card" id="day-76">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">6</span></div>
+      <div class="day-meta">
+        <h3>🏛 里昂老城 → 日内瓦</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚂 火车</span>
+          <span class="tag tag-hotel">🏨 Hotel d'Alleves · 日内瓦</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="notice-box info"><strong>💡 提示</strong> 出发前需向日内瓦酒店提前告知，请酒店预留一张<strong>日内瓦市内交通卡</strong>（凭住宿证明可免费领取）。</div>
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏨</div>
+            <div>
+              <div class="spot-name">Pullman Lyon（出发点）</div>
+              <div class="spot-name-lang">出发地 · 步行至里昂Part-Dieu火车站约8分钟</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚶</span>
+          <span class="tc-info">酒店 → 里昂Part-Dieu火车站（步行）</span>
+          <span class="tc-time">~8分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏘</div>
+            <div>
+              <div class="spot-name">里昂老城区 Vieux Lyon</div>
+              <div class="spot-name-lang">法语: Vieux-Lyon · 英语: Old Lyon / Lyon's Historic District</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需保守着装</span>
+                <span class="badge badge-free">免费游览（外部）</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>距离</strong>Part-Dieu火车站至老城地铁D线约10分钟</div>
+            <div class="spot-grid-item"><strong>亮点</strong>文艺复兴建筑、特色丝布店、小王子礼品店</div>
+            <div class="spot-grid-item"><strong>注意事项</strong>老城路面石板路，穿舒适鞋子</div>
+            <div class="spot-grid-item"><strong>停留建议</strong>2–3小时</div>
+          </div>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🦊</div>
+            <div>
+              <div class="spot-name">小王子礼品店</div>
+              <div class="spot-name-lang">法语: Boutique Le Petit Prince · 英语: The Little Prince Gift Shop</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">圣埃克絮佩里是里昂人，老城区有专门的小王子主题纪念品商店，非常适合购买特色伴手礼。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚂</span>
+          <span class="tc-info">里昂Part-Dieu → 日内瓦Cornavin（TGV/TER）</span>
+          <span class="tc-time">~2小时 · 票已购</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏨</div>
+            <div>
+              <div class="spot-name">Hotel d'Alleves（今日终点）</div>
+              <div class="spot-name-lang">法语: Hôtel d'Allèves · 英语: Hotel d'Alleves Geneva</div>
+              <div class="spot-badges"><span class="badge badge-free">今日终点</span></div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>地址</strong>Rue du Cendrier 16, 1201 Genève</div>
+            <div class="spot-grid-item"><strong>日内瓦站→酒店</strong>步行约8分钟</div>
+            <div class="spot-grid-item"><strong>重要</strong>办理入住时领取免费日内瓦交通卡</div>
+            <div class="spot-grid-item"><strong>评分</strong>⭐ 4.5/5</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ SWITZERLAND ═══════════ -->
+  <div id="swiss" class="country-header swiss section-anchor">
+    <div class="country-flag">🇨🇭</div>
+    <div class="country-info">
+      <h2>瑞士 Switzerland</h2>
+      <p>7月7日 — 7月13日 · 日内瓦 · 格林德瓦 · 卢塞恩 · 苏黎世 · 列支敦士登</p>
+    </div>
+  </div>
+
+  <!-- Day 7.7 -->
+  <div class="day-card" id="day-77">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">7</span></div>
+      <div class="day-meta">
+        <h3>🏔 日内瓦市区 → 格林德瓦</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚂 火车</span>
+          <span class="tag tag-hotel">🏨 Hotel Cabana · 格林德瓦</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="notice-box green"><strong>✓ 瑞士通票</strong> 今日起生效，连续8天有效，覆盖几乎所有瑞士公共交通（火车、大多数邮政巴士、轮船、城市交通）。请随身携带。</div>
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏨</div>
+            <div><div class="spot-name">Hotel d'Alleves（出发点）</div></div>
+          </div>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">⛲</div>
+            <div>
+              <div class="spot-name">日内瓦大喷泉 Jet d'Eau</div>
+              <div class="spot-name-lang">法语: Jet d'Eau · 英语: Geneva Water Jet</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需保守着装</span>
+                <span class="badge badge-free">免费观看</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>酒店→喷泉</strong>步行约20分钟 或 乘公交约10分钟</div>
+            <div class="spot-grid-item"><strong>注意事项</strong>靠近时可能被水雾打湿，注意随身物品防水</div>
+          </div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚶</span>
+          <span class="tc-info">喷泉 → 日内瓦老城区</span>
+          <span class="tc-time">~10分钟步行</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🕌</div>
+            <div>
+              <div class="spot-name">圣皮埃尔大教堂</div>
+              <div class="spot-name-lang">法语: Cathédrale Saint-Pierre · 英语: Saint Pierre Cathedral</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-yes">⚠️ 需保守着装</span>
+                <span class="badge badge-ticket">塔楼登顶需购票</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">宗教改革历史中心，外部参观免费，登塔楼可俯瞰日内瓦全景。进入教堂需遮盖肩膀和膝盖，请勿穿无袖衣或短裤进入。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚂</span>
+          <span class="tc-info">日内瓦Cornavin → 因特拉肯Ost → 格林德瓦</span>
+          <span class="tc-time">~3.5小时 · 瑞士通票有效</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏨</div>
+            <div>
+              <div class="spot-name">Hotel Cabana（今日终点）</div>
+              <div class="spot-name-lang">英语: Hotel Cabana Grindelwald</div>
+              <div class="spot-badges"><span class="badge badge-free">今日终点</span></div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>地址</strong>Dorfstrasse 46, 3818 Grindelwald</div>
+            <div class="spot-grid-item"><strong>车站→酒店</strong>步行约10分钟（坡路，有行李建议叫出租）</div>
+            <div class="spot-grid-item"><strong>评分</strong>⭐ 4.5/5</div>
+            <div class="spot-grid-item"><strong>特色</strong>可直视艾格峰景观</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 7.8 -->
+  <div class="day-card" id="day-78">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">8</span></div>
+      <div class="day-meta">
+        <h3>⛰ 采尔马特 + 马特洪峰</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚂 火车</span>
+          <span class="tag tag-hotel">🏨 Hotel Cabana · 格林德瓦</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="notice-box alert"><strong>⚠️ 重要</strong> 采尔马特是无燃油车小镇，禁止私家车进入。需在Täsch停车后换乘专线火车进镇（约12分钟）。当天往返格林德瓦，全天行程约需10-11小时。</div>
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Hotel Cabana（出发点，约6:00出发）</div></div></div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚂</span>
+          <span class="tc-info">格林德瓦 → 因特拉肯Ost → 维斯普 → 采尔马特</span>
+          <span class="tc-time">~3小时 · 瑞士通票有效</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏔</div>
+            <div>
+              <div class="spot-name">马特洪峰 Matterhorn</div>
+              <div class="spot-name-lang">德语: Matterhorn · 意大利语: Monte Cervino · 英语: Matterhorn Peak</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需保守着装</span>
+                <span class="badge badge-ticket">缆车需购票</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>推荐视角</strong>Gornergrat齿轨列车可近距离观赏马特洪峰（另购票）</div>
+            <div class="spot-grid-item"><strong>着装</strong>山上温度低，建议携带外套，穿运动鞋或登山鞋</div>
+            <div class="spot-grid-item"><strong>注意</strong>高海拔注意防晒，备好墨镜</div>
+            <div class="spot-grid-item"><strong>停留建议</strong>3–4小时</div>
+          </div>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏘</div>
+            <div>
+              <div class="spot-name">采尔马特小镇漫步</div>
+              <div class="spot-name-lang">德语: Zermatt · 英语: Zermatt Village</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+                <span class="badge badge-free">免费游览</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">步行街商店、瑞士特色餐厅、纪念品店，镇内禁止燃油车，非常宁静。推荐尝试当地奶酪火锅（fondue）。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚂</span>
+          <span class="tc-info">采尔马特 → 格林德瓦（返程）</span>
+          <span class="tc-time">~3小时 · 建议17:00前出发</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Hotel Cabana（今日终点）</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 7.9 -->
+  <div class="day-card" id="day-79">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">9</span></div>
+      <div class="day-meta">
+        <h3>🛝 First山区 + 格林德瓦</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚟 缆车+火车</span>
+          <span class="tag tag-hotel">🏨 Hotel Cabana · 格林德瓦</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Hotel Cabana（出发点）</div></div></div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚡</span>
+          <span class="tc-info">格林德瓦村 → First缆车站（步行约15分钟或公交）</span>
+          <span class="tc-time">~15分钟步行</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🛷</div>
+            <div>
+              <div class="spot-name">First山区 · 山地滑梯</div>
+              <div class="spot-name-lang">德语: First Berg · 英语: First Mountain / First Flyer & Mountain Cart</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需保守着装</span>
+                <span class="badge badge-ticket">缆车+设施需购票</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>主要项目</strong>First Flyer飞索、Mountain Cart山地卡丁车、Trottibike滑板车</div>
+            <div class="spot-grid-item"><strong>海拔</strong>约2,168米，温度较低，建议带外套</div>
+            <div class="spot-grid-item"><strong>着装</strong>穿运动装、防风外套、运动鞋，避免裙装</div>
+            <div class="spot-grid-item"><strong>停留建议</strong>半天（早上出发）</div>
+          </div>
+          <div class="spot-desc">瑞士通票可享缆车折扣，但不完全免费，具体活动项目需另行购票。建议早上开始，避开人群高峰。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚡</span>
+          <span class="tc-info">First → 格林德瓦（缆车下山）</span>
+          <span class="tc-time">~20分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏘</div>
+            <div>
+              <div class="spot-name">格林德瓦下午自由活动</div>
+              <div class="spot-name-lang">德语: Grindelwald · 英语: Grindelwald Village</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 休闲装即可</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">逛小镇商铺，尝瑞士巧克力和奶酪，或在酒店花园欣赏艾格峰落日景色。</div>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Hotel Cabana（今日终点）</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 7.10 -->
+  <div class="day-card" id="day-710">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">10</span></div>
+      <div class="day-meta">
+        <h3>🚂 布莱恩茨小火车 + 特拉肯</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚂 小火车</span>
+          <span class="tag tag-hotel">🏨 Hotel Cabana · 格林德瓦</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="notice-box alert"><strong>⚠️ 时间关键</strong> 布莱恩茨小火车 <strong>11:45发车</strong>，需提前20分钟（即11:25前）到达车站。<strong>14:28返程</strong>。请务必提前到站！</div>
+      <div class="notice-box info"><strong>💡 座位技巧</strong> 上山坐<strong>进行方向的左边</strong>，下山坐<strong>进行方向的右边</strong>，可获最佳景观视角。</div>
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Hotel Cabana（出发点，约9:00出发）</div></div></div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚂</span>
+          <span class="tc-info">格林德瓦 → 因特拉肯Ost → 布莱恩茨（Brienz）</span>
+          <span class="tc-time">~1小时 · 瑞士通票有效</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🚂</div>
+            <div>
+              <div class="spot-name">布莱恩茨罗特洪峰小火车</div>
+              <div class="spot-name-lang">德语: Brienz Rothorn Bahn · 英语: Brienz Rothorn Steam Railway</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需保守着装</span>
+                <span class="badge badge-ticket">需购火车票（通票部分优惠）</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>发车时间</strong>11:45（已确认）</div>
+            <div class="spot-grid-item"><strong>返程时间</strong>14:28</div>
+            <div class="spot-grid-item"><strong>到站要求</strong>发车前20分钟（11:25前）</div>
+            <div class="spot-grid-item"><strong>注意</strong>蒸汽小火车，可能有煤烟，浅色衣服注意</div>
+          </div>
+          <div class="spot-desc">瑞士唯一全年运营的蒸汽齿轨铁路，沿途风景如画，顶部可眺望阿尔卑斯全景。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚂</span>
+          <span class="tc-info">布莱恩茨 → 因特拉肯 → 特拉肯（Thun）</span>
+          <span class="tc-time">~45分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏰</div>
+            <div>
+              <div class="spot-name">特拉肯（图恩）</div>
+              <div class="spot-name-lang">德语: Thun · 英语: Thun / Thun Castle</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">图恩是个美丽的湖边小城，可参观图恩城堡（Schloss Thun），俯瞰图恩湖和阿尔卑斯山全景。下午游览后返回格林德瓦。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚂</span>
+          <span class="tc-info">特拉肯 → 因特拉肯 → 格林德瓦</span>
+          <span class="tc-time">~1.5小时</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Hotel Cabana（今日终点）</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 7.11 -->
+  <div class="day-card" id="day-711">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">11</span></div>
+      <div class="day-meta">
+        <h3>🚂 黄金列车 → 卢塞恩 → 瑞吉山</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚂 黄金列车+轮船</span>
+          <span class="tag tag-hotel">🏨 Burgenstock Hotel</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="notice-box info"><strong>💡 乘船码头</strong> 前往瑞吉山的轮船码头：<strong>Luzern Bahnhofquai</strong>（卢塞恩火车站正前方），非常容易找到。</div>
+      <div class="notice-box"><strong>💺 座位建议</strong> 黄金列车坐<strong>进行方向右边座位</strong>，景色最佳。</div>
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Hotel Cabana（出发点）</div></div></div>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🚂</div>
+            <div>
+              <div class="spot-name">黄金快车 Golden Pass</div>
+              <div class="spot-name-lang">德语: GoldenPass Express · 英语: GoldenPass Panoramic Train</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+                <span class="badge badge-ticket">全景座位需提前预定</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>路线</strong>因特拉肯 → 茨魏西门 → 卢塞恩</div>
+            <div class="spot-grid-item"><strong>时长</strong>约3.5–4小时</div>
+            <div class="spot-grid-item"><strong>座位</strong>进行方向右边，全景车厢提前订位</div>
+            <div class="spot-grid-item"><strong>票务</strong>瑞士通票有效，全景座位附加费约CHF 10</div>
+          </div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">⛴</span>
+          <span class="tc-info">Luzern Bahnhofquai码头 → Vitznau → Rigi Kulm</span>
+          <span class="tc-time">轮船约1小时，再换齿轨火车约30分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">⛰</div>
+            <div>
+              <div class="spot-name">瑞吉山 Rigi Kulm</div>
+              <div class="spot-name-lang">德语: Rigi · 英语: Mount Rigi / Queen of the Mountains</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需保守着装</span>
+                <span class="badge badge-ticket">齿轨火车需购票</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>海拔</strong>1,798米</div>
+            <div class="spot-grid-item"><strong>景色</strong>360°全景，可见琉森湖和阿尔卑斯群峰</div>
+            <div class="spot-grid-item"><strong>注意</strong>山顶较冷，带外套</div>
+            <div class="spot-grid-item"><strong>停留</strong>1–2小时</div>
+          </div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚌</span>
+          <span class="tc-info">卢塞恩 → Burgenstock Resort（专车接驳或出租）</span>
+          <span class="tc-time">~30分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏨</div>
+            <div>
+              <div class="spot-name">Burgenstock Resort（今日终点）</div>
+              <div class="spot-name-lang">德语: Bürgenstock Resort · 英语: Burgenstock Resort Lake Lucerne</div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>评分</strong>⭐ 4.6/5（4721条评价）</div>
+            <div class="spot-grid-item"><strong>特色</strong>山顶度假村，俯瞰琉森湖，含温泉水疗</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 7.12 -->
+  <div class="day-card" id="day-712">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">12</span></div>
+      <div class="day-meta">
+        <h3>🧖 Burgenstock 温泉度假日</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🛁 度假</span>
+          <span class="tag tag-hotel">🏨 Burgenstock Hotel</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="notice-box green"><strong>🧖 休息日</strong> 今天完全在Burgenstock Resort放松，享受世界级温泉水疗，无需赶行程。</div>
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">♨️</div>
+            <div>
+              <div class="spot-name">Burgenstock Alpine Spa</div>
+              <div class="spot-name-lang">英语: Alpine Spa & Pool · 德语: Alpines Spa</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 泳装即可</span>
+                <span class="badge badge-ticket">住客免费使用</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">欧洲知名山顶度假水疗，含室内外泳池、桑拿、按摩等，可俯瞰琉森湖景。建议提前预约按摩项目。</div>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🚶</div>
+            <div>
+              <div class="spot-name">山顶悬崖电梯徒步</div>
+              <div class="spot-name-lang">德语: Hammetschwand Lift · 英语: Hammetschwand Elevator (Europe's Highest Outdoor Lift)</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 舒适休闲装</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">欧洲最高户外电梯，全程自然步道，约1–2小时休闲漫步。从度假村步行可达。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 7.13 -->
+  <div class="day-card" id="day-713">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">13</span></div>
+      <div class="day-meta">
+        <h3>🏰 列支敦士登王国一日游</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚂 火车+公交</span>
+          <span class="tag tag-hotel">🏨 Ruby mini Hotel · 苏黎世</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="notice-box"><strong>💡 交通指引</strong> 苏黎世乘火车至 <strong>Sarganz站</strong> 下车，换乘<strong>11路公交</strong>至 <strong>Vaduz Post</strong>（列支敦士登首都瓦杜兹邮政总局），当天往返。</div>
+      <div class="notice-box alert"><strong>⚠️ 注意</strong> 列支敦士登是独立公国，不在申根区，但无边境检查。可在Vaduz购买护照盖章（纪念品性质，约CHF 3）。</div>
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Burgenstock（出发点，退房去苏黎世）</div></div></div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚂</span>
+          <span class="tc-info">卢塞恩/Burgenstock → 苏黎世（寄存行李）→ Sarganz</span>
+          <span class="tc-time">苏黎世→Sarganz约1小时</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🚌</div>
+            <div>
+              <div class="spot-name">11路公交 Sarganz → Vaduz</div>
+              <div class="spot-name-lang">德语: Postauto Linie 11 · 英语: Bus Line 11 to Vaduz</div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>下车站</strong>Vaduz Post（终点站）</div>
+            <div class="spot-grid-item"><strong>时长</strong>约20分钟</div>
+          </div>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏰</div>
+            <div>
+              <div class="spot-name">瓦杜兹城堡 Vaduz Castle</div>
+              <div class="spot-name-lang">德语: Schloss Vaduz · 英语: Vaduz Castle (Royal Residence)</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+                <span class="badge badge-free">外部免费参观</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">列支敦士登公国王室居所，仅可外部参观，步行山路约20分钟上山。俯瞰莱茵河谷景色绝美。</div>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🎨</div>
+            <div>
+              <div class="spot-name">列支敦士登国立美术馆</div>
+              <div class="spot-name-lang">德语: Kunstmuseum Liechtenstein · 英语: Kunstmuseum Liechtenstein</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+                <span class="badge badge-ticket">需购票</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">小巧精致的现代艺术博物馆，馆藏颇为惊艳，值得一游。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚌</span>
+          <span class="tc-info">Vaduz → Sarganz → 苏黎世（返程）</span>
+          <span class="tc-time">~1.5小时</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏨</div>
+            <div>
+              <div class="spot-name">Ruby Mimi Hotel Zurich（今日终点）</div>
+              <div class="spot-name-lang">英语: Ruby Mimi Hotel Zurich by IHG</div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>评分</strong>⭐ 4.7/5（3593条评价）</div>
+            <div class="spot-grid-item"><strong>位置</strong>苏黎世中央火车站步行2分钟</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ ITALY ═══════════ -->
+  <div id="italy" class="country-header italy section-anchor">
+    <div class="country-flag">🇮🇹</div>
+    <div class="country-info">
+      <h2>意大利 Italy</h2>
+      <p>7月14日 — 7月21日 · 米兰 · 科莫湖 · 弗洛伦萨 · 比萨 · 罗马</p>
+    </div>
+  </div>
+
+  <!-- Day 7.14 -->
+  <div class="day-card" id="day-714">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">14</span></div>
+      <div class="day-meta">
+        <h3>🏛 苏黎世 → 米兰 + 大教堂</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚌 包车</span>
+          <span class="tag tag-hotel">🏨 Prestige Boutique Hotel · 米兰</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="notice-box green"><strong>✓ 已购</strong> 米兰大教堂（含登顶）门票已购买。</div>
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Ruby Mimi Hotel（出发点）</div></div></div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚌</span>
+          <span class="tc-info">苏黎世 → 米兰（包车）</span>
+          <span class="tc-time">~3.5–4小时</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">⛪</div>
+            <div>
+              <div class="spot-name">米兰大教堂 Duomo di Milano</div>
+              <div class="spot-name-lang">意大利语: Duomo di Milano · 英语: Milan Cathedral</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-yes">⚠️ 必须保守着装</span>
+                <span class="badge badge-ticket">✓ 票已购</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>着装要求</strong>进入教堂须遮盖肩膀和膝盖，男女均需。可携带披肩备用。</div>
+            <div class="spot-grid-item"><strong>参观时间</strong>14:00后（按行程）</div>
+            <div class="spot-grid-item"><strong>注意</strong>屋顶参观另需购票，建议预留1.5–2小时</div>
+            <div class="spot-grid-item"><strong>停留</strong>2–3小时（含登顶）</div>
+          </div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚶</span>
+          <span class="tc-info">大教堂 → 王宫（步行）</span>
+          <span class="tc-time">~3分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">👑</div>
+            <div>
+              <div class="spot-name">米兰王宫</div>
+              <div class="spot-name-lang">意大利语: Palazzo Reale di Milano · 英语: Royal Palace of Milan</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+                <span class="badge badge-ticket">需购票（特展另收费）</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">紧邻大教堂，历史宫殿现为艺术展览馆，常有世界级特展，值得一看。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚇</span>
+          <span class="tc-info">大教堂区 → 和平门（地铁M5约15分钟）</span>
+          <span class="tc-time">~15分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏛</div>
+            <div>
+              <div class="spot-name">和平门 Arco della Pace</div>
+              <div class="spot-name-lang">意大利语: Arco della Pace · 英语: Arch of Peace</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+                <span class="badge badge-free">免费参观</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">新古典主义凯旋门，附近是Parco Sempione公园，傍晚散步非常惬意。</div>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Prestige Boutique Hotel（今日终点）</div><div class="spot-name-lang">地址: Via Torino 2, 米兰大教堂步行3分钟</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 7.15 -->
+  <div class="day-card" id="day-715">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">15</span></div>
+      <div class="day-meta">
+        <h3>⛵ 科莫湖一日游</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚌 包车</span>
+          <span class="tag tag-hotel">🏨 Prestige Boutique Hotel · 米兰</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="notice-box green"><strong>✓ 已预订</strong> 科莫湖游船 <strong>Taxi Boat Varenna</strong> 已定，已付 100 EUR 定金，还需支付 200 EUR 尾款。</div>
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Prestige Boutique Hotel（出发点）</div></div></div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚌</span>
+          <span class="tc-info">米兰 → 科莫湖（包车）</span>
+          <span class="tc-time">~1小时</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">💧</div>
+            <div>
+              <div class="spot-name">科莫湖</div>
+              <div class="spot-name-lang">意大利语: Lago di Como · 英语: Lake Como</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 休闲装，泳装备用</span>
+                <span class="badge badge-ticket">✓ 游船已预订</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>游船</strong>Taxi Boat Varenna（私人船）</div>
+            <div class="spot-grid-item"><strong>定金</strong>已付100EUR，尾款200EUR待付（船家确认时支付）</div>
+            <div class="spot-grid-item"><strong>推荐停靠</strong>贝拉吉奥（Bellagio）、瓦伦纳（Varenna）小镇</div>
+            <div class="spot-grid-item"><strong>注意</strong>夏季阳光强烈，备好防晒和墨镜</div>
+          </div>
+          <div class="spot-desc">科莫湖是意大利最美的湖泊之一，周围有无数名人别墅。私人快艇出行体验极佳，可灵活停靠各村镇。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚌</span>
+          <span class="tc-info">科莫湖 → 米兰（包车返回）</span>
+          <span class="tc-time">~1小时</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Prestige Boutique Hotel（今日终点）</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 7.16 -->
+  <div class="day-card" id="day-716">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">16</span></div>
+      <div class="day-meta">
+        <h3>🌸 米兰 → 弗洛伦萨</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚌 包车</span>
+          <span class="tag tag-hotel">🏨 Piazza Pitti Palace · 弗洛伦萨</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Prestige Boutique Hotel（出发点）</div></div></div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚌</span>
+          <span class="tc-info">米兰 → 弗洛伦萨（包车）</span>
+          <span class="tc-time">~3小时</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🌉</div>
+            <div>
+              <div class="spot-name">抵达弗洛伦萨，傍晚自由游览</div>
+              <div class="spot-name-lang">意大利语: Firenze · 英语: Florence</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装（教堂内除外）</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">抵达后可步行至附近的Pitti宫广场，感受佛罗伦萨氛围，或在酒店周边的圣灵区小餐馆享用晚餐。</div>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏨</div>
+            <div>
+              <div class="spot-name">Piazza Pitti Palace（今日终点）</div>
+              <div class="spot-name-lang">英语: Piazza Pitti Palace Hotel Florence</div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>地址</strong>Piazza de' Pitti 13, 50125 Firenze</div>
+            <div class="spot-grid-item"><strong>评分</strong>⭐ 4.5/5（141条评价）</div>
+            <div class="spot-grid-item"><strong>特色</strong>正对碧提宫，历史宫殿改建，超大套房</div>
+            <div class="spot-grid-item"><strong>位置</strong>距所有主要景点步行5–10分钟</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 7.17 -->
+  <div class="day-card" id="day-717">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">17</span></div>
+      <div class="day-meta">
+        <h3>🎨 弗洛伦萨 City Walk</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚌 包车+步行</span>
+          <span class="tag tag-hotel">🏨 Piazza Pitti Palace · 弗洛伦萨</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Piazza Pitti Palace（出发点）</div></div></div>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🌄</div>
+            <div>
+              <div class="spot-name">米开朗基罗广场</div>
+              <div class="spot-name-lang">意大利语: Piazzale Michelangelo · 英语: Michelangelo Square</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+                <span class="badge badge-free">免费参观</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>酒店→广场</strong>步行约20分钟上山，或包车直达</div>
+            <div class="spot-grid-item"><strong>最佳时间</strong>清晨日出或傍晚日落前</div>
+            <div class="spot-grid-item"><strong>注意</strong>坡路较陡，穿舒适鞋</div>
+            <div class="spot-grid-item"><strong>停留</strong>30–60分钟</div>
+          </div>
+          <div class="spot-desc">佛罗伦萨最佳全景瞭望台，可俯瞰红顶教堂、阿诺河和整个城市天际线，日出日落尤其绝美。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚶</span>
+          <span class="tc-info">米开朗基罗广场 → 圣母百花大教堂</span>
+          <span class="tc-time">步行约25分钟或包车10分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">⛪</div>
+            <div>
+              <div class="spot-name">圣母百花大教堂</div>
+              <div class="spot-name-lang">意大利语: Cattedrale di Santa Maria del Fiore · 英语: Florence Cathedral / Duomo</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-yes">⚠️ 必须保守着装</span>
+                <span class="badge badge-ticket">穹顶登顶需提前预购票</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>着装要求</strong>遮盖肩膀和膝盖（男女均需），否则不得入内</div>
+            <div class="spot-grid-item"><strong>注意</strong>穹顶门票需提前网上购买，现场常售罄</div>
+            <div class="spot-grid-item"><strong>登顶</strong>463级台阶，无电梯，不适合腿脚不便者</div>
+            <div class="spot-grid-item"><strong>停留</strong>2–3小时（含排队）</div>
+          </div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚶</span>
+          <span class="tc-info">大教堂 → 韦奇奥老桥</span>
+          <span class="tc-time">步行约10分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🌉</div>
+            <div>
+              <div class="spot-name">韦奇奥老桥</div>
+              <div class="spot-name-lang">意大利语: Ponte Vecchio · 英语: Ponte Vecchio (Old Bridge)</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+                <span class="badge badge-free">免费通行</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">佛罗伦萨标志性建筑，中世纪石桥上布满金店珠宝铺。非常热闹，注意看管随身物品，扒手较多。傍晚光线最美适合拍照。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚶</span>
+          <span class="tc-info">韦奇奥老桥 → 酒店</span>
+          <span class="tc-time">步行约10分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Piazza Pitti Palace（今日终点）</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 7.18 -->
+  <div class="day-card" id="day-718">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">18</span></div>
+      <div class="day-meta">
+        <h3>🗼 弗洛伦萨 → 比萨 → 罗马</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚌 包车</span>
+          <span class="tag tag-hotel">🏨 Parisii Bocca di Leon 88 · 罗马</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Piazza Pitti Palace（出发点）</div></div></div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚌</span>
+          <span class="tc-info">弗洛伦萨 → 比萨（包车）</span>
+          <span class="tc-time">~1小时</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🗼</div>
+            <div>
+              <div class="spot-name">比萨斜塔广场（奇迹广场）</div>
+              <div class="spot-name-lang">意大利语: Piazza dei Miracoli / Torre di Pisa · 英语: Piazza dei Miracoli / Leaning Tower of Pisa</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-yes">⚠️ 进入教堂需保守着装</span>
+                <span class="badge badge-ticket">斜塔登顶需提前购票</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>包含景点</strong>斜塔、洗礼堂、主教堂（进入需遮肩遮膝）、圣善公墓</div>
+            <div class="spot-grid-item"><strong>注意</strong>斜塔登顶需提前网购，现场难买到</div>
+            <div class="spot-grid-item"><strong>停留</strong>2–3小时</div>
+            <div class="spot-grid-item"><strong>安全</strong>景区外围扒手较多</div>
+          </div>
+          <div class="spot-desc">下午参观比萨奇迹广场，可参观标志性的比萨斜塔（建议提前预购登塔门票），主教堂内部需保守着装。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚌</span>
+          <span class="tc-info">比萨 → 罗马（包车）</span>
+          <span class="tc-time">~3.5小时</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏨</div>
+            <div>
+              <div class="spot-name">Parisii Bocca di Leon 88（今日终点）</div>
+              <div class="spot-name-lang">英语: Parisii Bocca di Leone 88 Rome</div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>地址</strong>Via Bocca di Leone 88, 00187 Roma</div>
+            <div class="spot-grid-item"><strong>评分</strong>⭐ 4.8/5（23条评价）</div>
+            <div class="spot-grid-item"><strong>位置</strong>西班牙广场步行3分钟</div>
+            <div class="spot-grid-item"><strong>特色</strong>精装套房，步行可达所有主要景点</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="notice-box info" style="margin-top:16px;"><strong>💡 西班牙阶梯</strong> 今日抵达酒店后，可顺道游览西班牙广场（步行3分钟）。注意：现在禁止在台阶上饮食，违者罚款。<br><strong>💡 博尔盖塞宫</strong> 若时间充裕，可顺道参观附近的博尔盖塞宫博物馆（需提前预约）。</div>
+    </div>
+  </div>
+
+  <!-- Day 7.19 -->
+  <div class="day-card" id="day-719">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">19</span></div>
+      <div class="day-meta">
+        <h3>🏟 罗马古城 + 斗兽场</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚶 步行为主</span>
+          <span class="tag tag-hotel">🏨 Parisii Bocca di Leon 88 · 罗马</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="notice-box green"><strong>✓ 已购</strong> 古罗马斗兽场门票已购买（含帕拉蒂尼山和古罗马广场）。建议早晨15:00入场避开人潮（按票面时间）。</div>
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Parisii Bocca di Leon 88（出发点）</div></div></div>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">⛲</div>
+            <div>
+              <div class="spot-name">特雷维许愿池</div>
+              <div class="spot-name-lang">意大利语: Fontana di Trevi · 英语: Trevi Fountain</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+                <span class="badge badge-free">免费参观</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>酒店→许愿池</strong>步行约8分钟</div>
+            <div class="spot-grid-item"><strong>最佳时间</strong>早晨7–9点人少</div>
+            <div class="spot-grid-item"><strong>注意</strong>禁止坐在喷泉边缘，禁止游泳</div>
+            <div class="spot-grid-item"><strong>传统</strong>背对喷泉投一枚硬币可再次来罗马</div>
+          </div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚶</span>
+          <span class="tc-info">特雷维许愿池 → 威尼斯广场</span>
+          <span class="tc-time">步行约15分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏛</div>
+            <div>
+              <div class="spot-name">威尼斯广场 / 祖国祭坛</div>
+              <div class="spot-name-lang">意大利语: Piazza Venezia / Altare della Patria · 英语: Piazza Venezia / Altar of the Fatherland</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+                <span class="badge badge-free">外部免费，内部需购票</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">俗称"结婚蛋糕"，登顶可360°俯瞰罗马全景，推荐登顶（约€7）。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚶</span>
+          <span class="tc-info">威尼斯广场 → 卡比托利欧博物馆</span>
+          <span class="tc-time">步行约5分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏺</div>
+            <div>
+              <div class="spot-name">卡比托利欧博物馆</div>
+              <div class="spot-name-lang">意大利语: Musei Capitolini · 英语: Capitoline Museums</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+                <span class="badge badge-ticket">需购票约€15</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">世界最古老的公共博物馆，收藏罗马帝国珍贵文物，包括著名的马可·奥勒留骑马雕像真迹。建议停留2小时。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚶</span>
+          <span class="tc-info">卡比托利欧博物馆 → 古罗马斗兽场</span>
+          <span class="tc-time">步行约10分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏟</div>
+            <div>
+              <div class="spot-name">古罗马斗兽场（科洛西姆）</div>
+              <div class="spot-name-lang">意大利语: Colosseo · 英语: Colosseum / Roman Amphitheatre</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-no">✓ 无需特殊着装</span>
+                <span class="badge badge-ticket">✓ 票已购（含古罗马广场）</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>入场时间</strong>15:00（按票面时间）</div>
+            <div class="spot-grid-item"><strong>注意</strong>夏季高温，带足水和防晒</div>
+            <div class="spot-grid-item"><strong>包含</strong>古罗马广场、帕拉蒂尼山（同票，可翌日参观）</div>
+            <div class="spot-grid-item"><strong>停留</strong>1.5–2小时</div>
+          </div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚶</span>
+          <span class="tc-info">斗兽场 → 酒店</span>
+          <span class="tc-time">步行约25分钟或地铁约15分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Parisii Bocca di Leon 88（今日终点）</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 7.20 -->
+  <div class="day-card" id="day-720">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">20</span></div>
+      <div class="day-meta">
+        <h3>⛪ 梵蒂冈 + 万神殿 · 最后一天</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">🚶 步行</span>
+          <span class="tag tag-hotel">🏨 Parisii Bocca di Leon 88 · 罗马</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="notice-box alert"><strong>⏰ 重要</strong> 梵蒂冈博物馆需上午 <strong>9:00前到达</strong>（预约票入场时间请提前确认），票已购买。</div>
+      <div class="notice-box alert"><strong>⚠️ 着装严格</strong> 梵蒂冈全境（博物馆、西斯廷礼拜堂、圣彼得大教堂）均需遮盖肩膀和膝盖，违者不得入内。请备好披肩或薄外套。</div>
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Parisii Bocca di Leon 88（出发点，约7:30出发）</div></div></div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚇</span>
+          <span class="tc-info">酒店 → 梵蒂冈（地铁A线 Ottaviano站）</span>
+          <span class="tc-time">约20分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🎨</div>
+            <div>
+              <div class="spot-name">梵蒂冈博物馆 + 西斯廷礼拜堂</div>
+              <div class="spot-name-lang">意大利语: Musei Vaticani / Cappella Sistina · 英语: Vatican Museums & Sistine Chapel</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-yes">⚠️ 严格保守着装</span>
+                <span class="badge badge-ticket">✓ 票已购</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>到达时间</strong>9:00前（务必遵守）</div>
+            <div class="spot-grid-item"><strong>着装</strong>遮肩+遮膝，否则不得入内，无例外</div>
+            <div class="spot-grid-item"><strong>注意</strong>西斯廷礼拜堂内禁止拍照、禁止喧哗</div>
+            <div class="spot-grid-item"><strong>停留</strong>3–4小时（博物馆非常大）</div>
+          </div>
+          <div class="spot-desc">馆内珍品包括拉斐尔画室（Stanze di Raffaello）和米开朗基罗的西斯廷天顶画，是人类艺术史上的至高之作。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚶</span>
+          <span class="tc-info">梵蒂冈博物馆 → 圣彼得广场（内部连通）</span>
+          <span class="tc-time">~5分钟步行</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">⛪</div>
+            <div>
+              <div class="spot-name">圣彼得大教堂</div>
+              <div class="spot-name-lang">意大利语: Basilica di San Pietro · 英语: St. Peter's Basilica</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-yes">⚠️ 必须保守着装</span>
+                <span class="badge badge-free">教堂免费，登顶需购票</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">教堂本身免费入场，登穹顶可俯瞰梵蒂冈和罗马（约€8步行登顶，€10乘电梯）。建议停留1.5–2小时。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚇</span>
+          <span class="tc-info">梵蒂冈 → 圣依纳爵教堂/万神殿区域</span>
+          <span class="tc-time">地铁或步行约25分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🕌</div>
+            <div>
+              <div class="spot-name">圣依纳爵教堂</div>
+              <div class="spot-name-lang">意大利语: Chiesa di Sant'Ignazio di Loyola · 英语: Church of Sant'Ignazio</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-yes">⚠️ 需保守着装</span>
+                <span class="badge badge-free">免费入场</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-desc">巴洛克风格教堂，以令人叹为观止的错视画穹顶天花板著称，视觉震撼极强。</div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚶</span>
+          <span class="tc-info">圣依纳爵 → 万神殿</span>
+          <span class="tc-time">步行约5分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">🏛</div>
+            <div>
+              <div class="spot-name">万神殿</div>
+              <div class="spot-name-lang">意大利语: Pantheon · 英语: Pantheon Rome</div>
+              <div class="spot-badges">
+                <span class="badge badge-dress-yes">⚠️ 需保守着装（宗教场所）</span>
+                <span class="badge badge-ticket">需购票约€5</span>
+              </div>
+            </div>
+          </div>
+          <div class="spot-grid">
+            <div class="spot-grid-item"><strong>注意</strong>已改为收费参观，需提前在线购票</div>
+            <div class="spot-grid-item"><strong>着装</strong>遮肩遮膝，宗教场所有要求</div>
+            <div class="spot-grid-item"><strong>停留</strong>30–60分钟</div>
+            <div class="spot-grid-item"><strong>亮点</strong>2000年前建成的穹顶至今完好，罗马建筑奇迹</div>
+          </div>
+        </div>
+
+        <div class="transport-connector">
+          <span class="tc-icon">🚶/🚇</span>
+          <span class="tc-info">万神殿 → 酒店</span>
+          <span class="tc-time">步行约20分钟</span>
+        </div>
+
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Parisii Bocca di Leon 88（今日终点，末日晚餐！）</div></div></div>
+          <div class="spot-desc" style="margin-top:8px;">今晚是欧洲之旅最后一晚，在酒店附近找家心仪的意大利餐厅，好好享用一顿大餐！推荐尝试正宗罗马料理：Cacio e Pepe（芝士黑椒意面）或 Coda alla Vaccinara（罗马式牛尾）。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day 7.21 -->
+  <div class="day-card" id="day-721">
+    <div class="day-header" onclick="toggleDay(this)">
+      <div class="day-num"><span class="month">七月</span><span class="date">21</span></div>
+      <div class="day-meta">
+        <h3>✈️ 罗马 → 迪拜 · 归程</h3>
+        <div class="day-meta-row">
+          <span class="tag tag-transport">✈️ EK098 · 15:25–23:15</span>
+        </div>
+      </div>
+      <span class="day-toggle">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="notice-box">
+        <strong>✈️ 返程航班信息</strong>
+        <table style="margin-top:10px;width:100%;border-collapse:collapse;font-size:13px;">
+          <tr><td style="padding:4px 12px 4px 0;color:var(--text-dim);width:110px;">航班号</td><td style="color:var(--gold);font-weight:600;">EK098（Emirates 阿联酋航空）</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;color:var(--text-dim);">出发</td><td>🇮🇹 罗马菲乌米奇诺机场 FCO · 航站楼 T3 · <strong>15:25</strong>（当地时间）</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;color:var(--text-dim);">到达</td><td>🇦🇪 迪拜国际机场 DXB · 航站楼 T3 · <strong>23:15</strong></td></tr>
+          <tr><td style="padding:4px 12px 4px 0;color:var(--text-dim);">飞行时长</td><td>约 5 小时 50 分钟 · 直飞</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;color:var(--text-dim);">机型</td><td>Airbus A380</td></tr>
+        </table>
+      </div>
+      <div class="notice-box alert"><strong>⚠️ 提醒</strong> 航班 15:25 出发，建议 <strong>12:00</strong> 前到达机场。罗马菲乌米奇诺机场（FCO）距市区约30公里，乘 Leonardo Express 直达约32分钟（€14），或打车约45–60分钟（€48固定价）。</div>
+      <div class="spots">
+        <div class="spot">
+          <div class="spot-header"><div class="spot-icon">🏨</div><div><div class="spot-name">Parisii Bocca di Leon 88（出发点，提前退房）</div></div></div>
+        </div>
+        <div class="transport-connector">
+          <span class="tc-icon">🚂</span>
+          <span class="tc-info">酒店 → 特米尼火车站（步行约20分钟） → Leonardo Express → FCO机场</span>
+          <span class="tc-time">火车约32分钟 · 全程约1.5小时</span>
+        </div>
+        <div class="spot">
+          <div class="spot-header">
+            <div class="spot-icon">✈️</div>
+            <div>
+              <div class="spot-name">罗马菲乌米奇诺机场</div>
+              <div class="spot-name-lang">意大利语: Aeroporto di Roma Fiumicino · 英语: Rome Fiumicino Airport (FCO)</div>
+            </div>
+          </div>
+          <div class="spot-desc">平安归来！欧洲17晚精彩之旅圆满结束。🎉</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TIPS ═══ -->
+  <div id="tips" class="section-anchor" style="margin-top:48px;">
+    <div class="section-title">💡 旅行贴士汇总</div>
+    <p class="section-sub">着装、安全、交通、省钱技巧</p>
+    <div class="tips-grid">
+      <div class="tip-card">
+        <h4>👗 着装注意</h4>
+        <p>进入教堂、修道院等宗教场所必须遮盖<strong>肩膀和膝盖</strong>，建议随身携带轻薄披肩。梵蒂冈执行最为严格，违者一律不得入内（无例外）。</p>
+      </div>
+      <div class="tip-card">
+        <h4>🎫 提前购票</h4>
+        <p>建议提前网购：梵蒂冈、斗兽场、比萨斜塔、佛罗伦萨大教堂穹顶、卡比托利欧博物馆、万神殿。夏季旺季现场几乎无票可买。</p>
+      </div>
+      <div class="tip-card">
+        <h4>🇨🇭 瑞士通票</h4>
+        <p>7月7日起生效8天，几乎覆盖所有瑞士公共交通。部分景区缆车可享折扣（非免费），登山铁路可能需附加费。</p>
+      </div>
+      <div class="tip-card">
+        <h4>💰 科莫湖游船</h4>
+        <p>Taxi Boat Varenna已定金100EUR，尾款200EUR请在上船前确认付款方式（现金/刷卡），避免现场纠纷。</p>
+      </div>
+      <div class="tip-card">
+        <h4>🌡 夏季高温</h4>
+        <p>意大利7月气温可达35°C+，请携带足量饮水、防晒霜、墨镜和遮阳帽。罗马步行游览建议早出发，下午1–4点避免在烈日下长时间行走。</p>
+      </div>
+      <div class="tip-card">
+        <h4>🔐 安全防盗</h4>
+        <p>弗洛伦萨韦奇奥老桥、罗马旅游区扒手较多，请使用贴身钱包，不要把手机放后袋，注意陌生人搭话时是否有同伙。</p>
+      </div>
+      <div class="tip-card">
+        <h4>📶 通讯建议</h4>
+        <p>建议购买欧盟区通用SIM卡（如Airalo eSIM，在迪拜机场出发前购买），法国、瑞士、意大利均可使用，省去换卡麻烦。</p>
+      </div>
+      <div class="tip-card">
+        <h4>🚿 日内瓦交通卡</h4>
+        <p>入住日内瓦酒店时，持住宿证明可免费领取日内瓦公共交通卡，涵盖期间内所有市内公交、有轨电车和地铁，记得主动向前台索取。</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end .main -->
+
+<div style="text-align:center;padding:40px;color:var(--text-dim);font-size:12px;border-top:1px solid var(--border);">
+  旅途愉快 · Bon voyage · Buon viaggio · Gute Reise 🌍
+</div>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script>
+function toggleDay(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+
+function scrollTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// Open first card only
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.day-card:not(#day-75)').forEach(c => c.classList.remove('open'));
+});
+</script>
+
+<!-- ── LEAFLET ── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function initLeafletMap() {
+  const waypoints = [
+    { lat: 45.7597, lng: 4.8422,  label: "🇫🇷 里昂",           date: "7.5 – 7.6",    color: "#4a90d9", side: false },
+    { lat: 46.2044, lng: 6.1432,  label: "🇨🇭 日内瓦",          date: "7.6 – 7.7",    color: "#e63946", side: false },
+    { lat: 46.6247, lng: 8.0338,  label: "🇨🇭 格林德瓦",        date: "7.7 – 7.11",   color: "#e63946", side: false },
+    { lat: 46.9980, lng: 8.3789,  label: "🇨🇭 卢塞恩/Burgenstock", date: "7.11 – 7.13", color: "#e63946", side: false },
+    { lat: 47.3769, lng: 8.5417,  label: "🇨🇭 苏黎世",          date: "7.13 – 7.14",  color: "#e63946", side: false },
+    { lat: 47.1410, lng: 9.5209,  label: "🏰 瓦杜兹 (列支敦士登)", date: "7.13 一日游", color: "#a855f7", side: true  },
+    { lat: 45.4642, lng: 9.1900,  label: "🇮🇹 米兰",            date: "7.14 – 7.16",  color: "#2a9d5c", side: false },
+    { lat: 46.0166, lng: 9.2577,  label: "💧 科莫湖",           date: "7.15 一日游",  color: "#39d0b8", side: true  },
+    { lat: 43.7696, lng: 11.2558, label: "🇮🇹 弗洛伦萨",        date: "7.16 – 7.18",  color: "#2a9d5c", side: false },
+    { lat: 43.7230, lng: 10.3966, label: "🗼 比萨",             date: "7.18 途经",    color: "#f0883e", side: true  },
+    { lat: 41.9028, lng: 12.4964, label: "🇮🇹 罗马",            date: "7.18 – 7.21",  color: "#2a9d5c", side: false },
+  ];
+
+  const map = L.map('map', { zoomControl: true, scrollWheelZoom: true })
+               .setView([44.8, 9.2], 6);
+
+  // Tile layer – CartoDB dark (no API key needed)
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright" style="color:#8b949e">OpenStreetMap</a> © <a href="https://carto.com/" style="color:#8b949e">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+
+  // Main route polyline (skip side-trip points)
+  const mainRoute = waypoints.filter(w => !w.side).map(w => [w.lat, w.lng]);
+  L.polyline(mainRoute, {
+    color: '#c9a84c',
+    weight: 2.5,
+    opacity: 0.75,
+    dashArray: null,
+  }).addTo(map);
+
+  // Side-trip dashed lines
+  // Zurich → Vaduz detour
+  L.polyline([[47.3769, 8.5417], [47.1410, 9.5209]], {
+    color: '#a855f7', weight: 1.8, opacity: 0.6, dashArray: '6 5'
+  }).addTo(map);
+  // Milan → Como detour
+  L.polyline([[45.4642, 9.1900], [46.0166, 9.2577]], {
+    color: '#39d0b8', weight: 1.8, opacity: 0.6, dashArray: '6 5'
+  }).addTo(map);
+
+  // Markers
+  let mainIdx = 0;
+  waypoints.forEach((wp) => {
+    if (!wp.side) mainIdx++;
+    const num = wp.side ? null : mainIdx;
+
+    // SVG circle marker
+    const svgSize = wp.side ? 28 : 34;
+    const r       = wp.side ? 10 : 13;
+    const svg = `
+      <svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="${svgSize/2}" cy="${svgSize/2}" r="${r}" fill="${wp.color}" stroke="#fff" stroke-width="2.5" opacity="0.92"/>
+        ${num ? `<text x="${svgSize/2}" y="${svgSize/2+4}" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#fff">${num}</text>` : `<circle cx="${svgSize/2}" cy="${svgSize/2}" r="4" fill="#fff" opacity="0.8"/>`}
+      </svg>`;
+
+    const icon = L.divIcon({
+      html: svg,
+      className: '',
+      iconSize: [svgSize, svgSize],
+      iconAnchor: [svgSize/2, svgSize/2],
+      popupAnchor: [0, -(svgSize/2 + 4)],
+    });
+
+    L.marker([wp.lat, wp.lng], { icon })
+     .addTo(map)
+     .bindPopup(`
+       <div style="font-size:13px;line-height:1.6;">
+         <strong style="font-size:15px;">${wp.label}</strong><br>
+         <span style="color:#8b949e;">${wp.date}</span>
+       </div>`, { maxWidth: 200 });
+  });
+})();
+</script>
+</body>
+</html>
